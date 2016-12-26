@@ -82,14 +82,14 @@ void swap(TEAM *a, TEAM *b) {
 void scoreboard(TEAM *team, TEAM *userteam) {
 	int i = 0, j = 0;
 	sort_team(team);
-	print("TEAM                     SCORE\n"); //print teams
+	print("TEAM                     SCORE    WON    DRAWN     LOST    GF    GA    GD\n"); //print teams
 	for (i = 0; i < 16; i++) {
 		team[i].place = i + 1;
 		if (team[i].id == userteam->id) {
-			printf("your team :%-14s%-5d\n", team[i].teamname, team[i].score);
+			printf("%-25s%-9d%-7d%-10d%-8d%-6d%-6d%-5d\n", team[i].teamname, team[i].score, team[i].score, team[i].won, team[i].drawn, team[i].lost, team[i].gf, team[i].ga, team[i].gd);
 			userteam->place = i + 1;
 			continue;
 		}
-		printf("%-25s%-5d\n", team[i].teamname, team[i].score);
+		printf("%-25s%-9d%-7d%-10d%-8d%-6d%-6d%-5d\n", team[i].teamname, team[i].score,team[i].score,team[i].won,team[i].drawn,team[i].lost,team[i].gf, team[i].ga, team[i].gd);
 	}
 }
