@@ -6,11 +6,11 @@
 #include "defines.h"
 int main() {
 	TEAM *team;
-	team = (TEAM *) malloc(16 * sizeof(TEAM));
+	team = (TEAM *)malloc(16 * sizeof(TEAM));
 	int i = 0;
 	int j = 0;
 	int choice = 0;
-	FILE *fp=NULL;
+	FILE *fp = NULL;
 	puts("Enter 1 for New league Or 2 for Load existing league:");
 	scanf("%d", &choice);
 	if (choice == 1) team = newleague(team);
