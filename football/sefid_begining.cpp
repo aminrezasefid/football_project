@@ -86,7 +86,7 @@ void scoreboard(TEAM *team, TEAM *userteam) {
 	for (i = 0; i < 16; i++) {
 		team[i].place = i + 1;
 		if (team[i].id == userteam->id) {
-			printf("%-25s%-9d%-7d%-10d%-8d%-6d%-6d%-5d\n", team[i].teamname, team[i].score, team[i].score, team[i].won, team[i].drawn, team[i].lost, team[i].gf, team[i].ga, team[i].gd);
+			printf("my team : %-15s%-9d%-7d%-10d%-8d%-6d%-6d%-5d\n", team[i].teamname, team[i].score, team[i].score, team[i].won, team[i].drawn, team[i].lost, team[i].gf, team[i].ga, team[i].gd);
 			userteam->place = i + 1;
 			continue;
 		}
