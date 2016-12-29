@@ -17,6 +17,7 @@ int main() {
 	if (choice == 1) {
 		team = newleague(team);
 		print_teams(team);
+		default_formation(team);
 		printf("%s", "Please choose a team number : ");
 		scanf("%d", &id);
 		userteam = team[id - 1];
@@ -25,4 +26,5 @@ int main() {
 	//nextgames();
 	scoreboard(team, &userteam);
 	printf("your place in Table: %d", userteam.place);
+	team_info(&userteam);
 }
