@@ -6,12 +6,12 @@ typedef struct playerlist {
 	int skill;
 	int fitness;
 	int form; 
+	int newgoal; //tedad gole zade dar bazi e akhar
 	int age; //sen
 	int goal; //tedad gole zade
 	char position; //mogheiyati k bazikon bazi mikonad G=darvaze ban , D=modafe , M=halfback ,A=mohajem
 	char best_position; //behtarin mogheiyati k bazikon bazi mikonad G=darvaze ban , D=modafe , M=halfback ,A=mohajem
-
-
+	int main; // moteghayer baraye inke befhmim bazikon asli hast ya na  (1 bazikon asli hast va -1 bazikon zakhire hast)
 } PLAYER;
 typedef struct teamlist
 {
