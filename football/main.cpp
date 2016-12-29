@@ -16,6 +16,7 @@ int main() {
 	scanf("%d", &choice);
 	if (choice == 1) {
 		team = newleague(team);
+		default_formation(team);
 		print_teams(team);
 		printf("%s", "Please choose a team number : ");
 		scanf("%d", &id);
