@@ -5,7 +5,6 @@
 #include "header.h"
 #include "defines.h"
 #include <time.h>
-
 TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi konan
 	srand(time(NULL));
 	FILE *fptr = fopen("teams.csv", "r");
@@ -52,6 +51,8 @@ TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi 
 				team[i].player[j].position = ch[1];
 				team[i].player[j].form = 100;
 				team[i].player[j].goal = 0;
+				team[i].player[j].newgoal = 0;
+				team[i].player[j].main = 1;
 			}
 			else {
 				team[i].reserved_player[j - 11].id = j;
@@ -67,7 +68,8 @@ TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi 
 				team[i].reserved_player[j - 11].position = ch[1];
 				team[i].reserved_player[j - 11].form = 100;
 				team[i].reserved_player[j - 11].goal = 0;
-
+				team[i].reserved_player[j - 11].newgoal = 0;
+				team[i].reserved_player[j - 11].main = -1;
 			}
 			j++;
 		}
@@ -124,7 +126,6 @@ void set_fitness(TEAM *team) {
 		i++;
 	}
 }
-
 void set_skill(TEAM *team) {
 	int i = 0;
 	int j = 0;
@@ -160,7 +161,6 @@ void set_skill(TEAM *team) {
 		i++;
 	}
 }
-
 void delay(float secs) {  //delay function
 	clock_t start;
 	clock_t stop;
@@ -171,7 +171,6 @@ void delay(float secs) {  //delay function
 		stop = clock();
 	}
 }
-
 void print(char str[50]) { //print function
 	int i = 0;
 	while (str[i] != '\0') {
@@ -181,7 +180,6 @@ void print(char str[50]) { //print function
 		i++;
 	}
 }
-
 void print_teams(TEAM *team) {
 	int i;
 	for (i = 0; i < 16; i++) {
@@ -268,14 +266,36 @@ PLAYER *find_wrostplayer(TEAM *team, char pos, int zakhire) {
 			}
 		}
 	return wrostplayer;
-
 }
-void change(PLAYER *player1, PLAYER *player2) {
-	PLAYER tmp;
-	tmp = *player1;
-	*player1 = *player2;
-	*player2 = tmp;
+void change(PLAYER *player1, PLAYER *player2,int def) {
 
+	if ((player1->main == -1 && player2->main == 1) || (player1->main == 1 && player2->main == -1) && def==1) {
+
+		PLAYER tmp;
+		player1->main = player1->main*-1;
+		player2->main = player2->main*-1;
+		tmp = *player1;
+		*player1 = *player2;
+		*player2 = tmp;
+	}
+	else if ((player1->main == -1 && player2->main == 1) || (player1->main == 1 && player2->main == -1) && def == 0) {
+		char tmp2;
+		tmp2 = player1->position;
+		player1->position = player2->position;
+		player2->position = tmp2;
+		PLAYER tmp;
+		player1->main = player1->main*-1;
+		player2->main = player2->main*-1;
+		tmp = *player1;
+		*player1 = *player2;
+		*player2 = tmp;
+	}
+	else {
+		char tmp;
+		tmp=player1->position;
+		player1->position = player2->position;
+		player2->position = tmp;
+	}
 }
 void position(int n, TEAM *team, char pos) {
 	int i = 0;
@@ -301,7 +321,7 @@ void position(int n, TEAM *team, char pos) {
 				bplayer = find_bestplayer(team, nxtpos, 1);
 
 			}
-			change(bplayer, wplayer);
+			change(bplayer, wplayer,1);
 			i--;
 		}
 		else {
@@ -310,36 +330,47 @@ void position(int n, TEAM *team, char pos) {
 			else if (pos == 'D') nxtpos = 'M';
 			else if (pos == 'M') nxtpos = 'A';
 			wplayer = find_wrostplayer(team, nxtpos, 0);
-			change(bplayer, wplayer);
+			change(bplayer, wplayer,1);
 			i++;
 		}
 	}
 }
-
-
-void default_formation(TEAM *team) {
-	int i;
-	for (i = 0; i < 16; i++) {
-		position(1, &team[i], 'G');
-		position(4, &team[i], 'D');
-		position(3, &team[i], 'M');
-	}
+void formation(int a,int b,int c,TEAM *team) {
+		position(a,team, 'G');
+		position(b,team, 'D');
+		position(c,team, 'M');
 }
-
 void team_info(TEAM *team) {
 	int i;
-	printf("|your main players|                     |MAIN POST|         |SKILL|      |FITNESS|        |FORM|       |CURRENT POST|\n");
+	printf("|id| |your main players|                   |MAIN POST|         |SKILL|      |FITNESS|        |FORM|       |CURRENT POST|\n");
 	for (i = 0; i < 11; i++) 
-			printf("%-40s%-20c%-13d%-17d%-15d%-10c\n", team->player[i].name, team->player[i].best_position, team->player[i].skill, team->player[i].fitness, team->player[i].form, team->player[i].position);
-	printf("|your reserved players|                 |MAIN POST|         |SKILL|      |FITNESS|        |FORM|       |CURRENT POST|\n");
+			printf("%-5d%-40s%-20c%-13d%-17d%-15d%-10c\n",i+1, team->player[i].name, team->player[i].best_position, team->player[i].skill, team->player[i].fitness, team->player[i].form, team->player[i].position);
+	printf("|id| |your reserved players|               |MAIN POST|         |SKILL|      |FITNESS|        |FORM|       |CURRENT POST|\n");
 	for (i=0;i<team->noplayers-11;i++)
-			printf("%-40s%-20c%-13d%-17d%-15d%-10c\n", team->reserved_player[i].name, team->reserved_player[i].best_position, team->reserved_player[i].skill, team->reserved_player[i].fitness, team->reserved_player[i].form, team->reserved_player[i].position);
+			printf("%-5d%-40s%-20c%-13d%-17d%-15d%-10c\n",i+12, team->reserved_player[i].name, team->reserved_player[i].best_position, team->reserved_player[i].skill, team->reserved_player[i].fitness, team->reserved_player[i].form, team->reserved_player[i].position);
 
 }
-
 TEAM *search_team_by_id(TEAM *team,int id) {
 	int i;
 	for (i = 0; i < 16; i++) {
 		if (team[i].id == id) return &team[i];
 	}
+}
+void teams_formation(int a, int c, int b, TEAM *team) {
+	int i = 0;
+	for (i = 0; i < 16; i++) {
+		formation(1, 4, 3, &team[i]);
+	}
+}
+void taviz(int id1, int id2, TEAM *team) {
+	PLAYER *pl1;
+	PLAYER *pl2;
+	if (id1 >= 11) pl1 = &(team->reserved_player[id1 - 11]);
+	else pl1 = &(team->player[id1]);
+	if (id2 >= 11) pl2 = &(team->reserved_player[id2 - 11]);
+	else pl2 = &(team->player[id2]);
+	change(pl1, pl2,0);
+}
+void toop(void) {
+
 }
