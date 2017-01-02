@@ -35,36 +35,13 @@ int main() {
 		printf("\n\nEnter your command : ");
 		scanf("%s", input);
 		if (strcmp(input, "exit")==0) break;
-		else if (strcmp(input, "lineup")==0) {
-			system("cls");
-			int a, b, c;
-			team_info(&userteam);
-			printf("Now you can change your formation\n");
-			printf("Enter the number of deffense :");
-			scanf("%d", &a);
-			printf("Enter the number of halfback :");
-			scanf("%d", &b);
-			printf("Enter the number of attack :");
-			scanf("%d", &c);
-			formation(1,a,b,&userteam);
-			team_info(&userteam);
-			printf("\n\nNow you can change your players place or change them when finished enter -1:\n\n");
-			while (1) {
-				int id1, id2;
-				printf("Enter first player id :");
-				scanf("%d", &id1);
-				if (id1 == -1) break;
-				printf("Enter second player id :");
-				scanf("%d", &id2);
-				taviz(id1-1, id2-1, &userteam);
-				team_info(&userteam);
-			}
-		}
+		else if (strcmp(input, "lineup")==0) lineup(&userteam);
 		else if (strcmp(input, "table")==0) scoreboard(team,&userteam);
 		else if (strcmp(input, "save") == 0);//save();
-		else if (strcmp(input, "proceed")) {
+		else if (strcmp(input, "proceed")==0) {
 			scanf("%d", &n);
-			//simulation(n);
+			simulation(team,&userteam,n);
 		}
+		else continue;
 	}
 }

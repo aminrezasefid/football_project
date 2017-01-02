@@ -130,9 +130,10 @@ void set_skill(TEAM *team) {
 	int i = 0;
 	int j = 0;
 	for (i = 0; i < 11; i++) {
-		int rnd = rand() % 40 + 60;
+		int rnd = (rand() * 100000) % 40 + 60;
 		if (rnd > 80 && rnd < 90 && j < 3) {
 			team->player[i].skill = rnd;
+			set_other_skill(&(team->player[i]));
 			j++;
 		}
 		else if (rnd > 80 && rnd < 90 && j == 3) {
@@ -141,7 +142,11 @@ void set_skill(TEAM *team) {
 		else if (rnd >= 90) {
 			i--;
 		}
-		else team->player[i].skill = rnd;
+		else {
+			team->player[i].skill = rnd;
+			set_other_skill(&(team->player[i]));
+		}
+
 	}
 	i = 0;
 	while (1) {
@@ -149,6 +154,7 @@ void set_skill(TEAM *team) {
 		int rnd = rand() % 40 + 60;
 		if (rnd > 80 && rnd < 90 && j < 3) {
 			team->reserved_player[i].skill = rnd;
+			set_other_skill(&(team->reserved_player[i]));
 			j++;
 		}
 		else if (rnd > 80 && rnd < 90 && j == 3) {
@@ -157,8 +163,39 @@ void set_skill(TEAM *team) {
 		else if (rnd >= 90) {
 			i--;
 		}
-		else team->reserved_player[i].skill = rnd;
+		else {
+			team->reserved_player[i].skill = rnd;
+			set_other_skill(&(team->reserved_player[i]));
+		}
 		i++;
+	}
+}
+void set_other_skill(PLAYER *player) {
+	char post = player->best_position;
+	int skill = player->skill;
+	if (post == 'G') {
+		player->G_skill = skill;
+		player->D_skill = skill - 30;
+		player->M_skill = skill - 35;
+		player->A_skill = skill - 40;
+	}
+	else if (post == 'D') {
+		player->G_skill = skill - 40;
+		player->D_skill = skill;
+		player->M_skill = skill - 20;
+		player->A_skill = skill - 30;
+	}
+	else if (post == 'M') {
+		player->G_skill = skill - 40;
+		player->D_skill = skill - 10;
+		player->M_skill = skill;
+		player->A_skill = skill - 10;
+	}
+	else {
+		player->G_skill = skill - 40;
+		player->D_skill = skill - 20;
+		player->M_skill = skill - 10;
+		player->A_skill = skill;
 	}
 }
 void delay(float secs) {  //delay function
@@ -230,7 +267,7 @@ void scoreboard(TEAM *team, TEAM *userteam) {
 }
 PLAYER *find_bestplayer(TEAM *team, char pos, int zakhire) {
 	int i;
-	PLAYER *bestplayer=NULL;
+	PLAYER *bestplayer = NULL;
 	if (zakhire == 1)
 		for (i = 0; i < team->noplayers - 12; i++) {
 			if (team->reserved_player[i].best_position == pos) {
@@ -241,8 +278,8 @@ PLAYER *find_bestplayer(TEAM *team, char pos, int zakhire) {
 	else
 		for (i = 0; i < 10; i++) {
 			if (team->player[i].best_position == pos) {
-				printf("%s\n",team->player[i].name);
-				if (team->player[i].fitness + team->player[i].skill > team->player[i + 1].fitness + team->player[i + 1].skill && team->player[i + 1].best_position == pos)	bestplayer = &(team->player[i + 1] );
+				printf("%s\n", team->player[i].name);
+				if (team->player[i].fitness + team->player[i].skill > team->player[i + 1].fitness + team->player[i + 1].skill && team->player[i + 1].best_position == pos)	bestplayer = &(team->player[i + 1]);
 				else bestplayer = &(team->player[i]);
 			}
 		}
@@ -250,11 +287,11 @@ PLAYER *find_bestplayer(TEAM *team, char pos, int zakhire) {
 }
 PLAYER *find_wrostplayer(TEAM *team, char pos, int zakhire) {
 	int i;
-	PLAYER *wrostplayer=NULL;
+	PLAYER *wrostplayer = NULL;
 	if (zakhire == 1)
 		for (i = 0; i < team->noplayers - 12; i++) {
 			if (team->reserved_player[i].best_position == pos) {
-				if (team->reserved_player[i].fitness + team->reserved_player[i].skill < team->reserved_player[i + 1].fitness + team->reserved_player[i + 1].skill && team->reserved_player[i+1].best_position == pos)	wrostplayer = &(team->reserved_player[i + 1]);
+				if (team->reserved_player[i].fitness + team->reserved_player[i].skill < team->reserved_player[i + 1].fitness + team->reserved_player[i + 1].skill && team->reserved_player[i + 1].best_position == pos)	wrostplayer = &(team->reserved_player[i + 1]);
 				else wrostplayer = &(team->reserved_player[i]);
 			}
 		}
@@ -267,9 +304,15 @@ PLAYER *find_wrostplayer(TEAM *team, char pos, int zakhire) {
 		}
 	return wrostplayer;
 }
-void change(PLAYER *player1, PLAYER *player2,int def) {
+void check_skill(PLAYER *player) {
+	if (player->position == 'G') player->skill = player->G_skill;
+	else if (player->position == 'D') player->skill = player->D_skill;
+	else if (player->position == 'M') player->skill = player->M_skill;
+	else player->skill = player->A_skill;
+}
+void change(PLAYER *player1, PLAYER *player2, int def) {
 
-	if ((player1->main == -1 && player2->main == 1) || (player1->main == 1 && player2->main == -1) && def==1) {
+	if ((player1->main == -1 && player2->main == 1) || (player1->main == 1 && player2->main == -1) && def == 1) {
 
 		PLAYER tmp;
 		player1->main = player1->main*-1;
@@ -292,10 +335,12 @@ void change(PLAYER *player1, PLAYER *player2,int def) {
 	}
 	else {
 		char tmp;
-		tmp=player1->position;
+		tmp = player1->position;
 		player1->position = player2->position;
 		player2->position = tmp;
 	}
+	check_skill(player1);
+	check_skill(player2);
 }
 void position(int n, TEAM *team, char pos) {
 	int i = 0;
@@ -321,7 +366,7 @@ void position(int n, TEAM *team, char pos) {
 				bplayer = find_bestplayer(team, nxtpos, 1);
 
 			}
-			change(bplayer, wplayer,1);
+			change(bplayer, wplayer, 1);
 			i--;
 		}
 		else {
@@ -330,27 +375,27 @@ void position(int n, TEAM *team, char pos) {
 			else if (pos == 'D') nxtpos = 'M';
 			else if (pos == 'M') nxtpos = 'A';
 			wplayer = find_wrostplayer(team, nxtpos, 0);
-			change(bplayer, wplayer,1);
+			change(bplayer, wplayer, 1);
 			i++;
 		}
 	}
 }
-void formation(int a,int b,int c,TEAM *team) {
-		position(a,team, 'G');
-		position(b,team, 'D');
-		position(c,team, 'M');
+void formation(int a, int b, int c, TEAM *team) {
+	position(a, team, 'G');
+	position(b, team, 'D');
+	position(c, team, 'M');
 }
 void team_info(TEAM *team) {
 	int i;
 	printf("|id| |your main players|                   |MAIN POST|         |SKILL|      |FITNESS|        |FORM|       |CURRENT POST|\n");
-	for (i = 0; i < 11; i++) 
-			printf("%-5d%-40s%-20c%-13d%-17d%-15d%-10c\n",i+1, team->player[i].name, team->player[i].best_position, team->player[i].skill, team->player[i].fitness, team->player[i].form, team->player[i].position);
+	for (i = 0; i < 11; i++)
+		printf("%-5d%-40s%-20c%-13d%-17d%-15d%-10c\n", i + 1, team->player[i].name, team->player[i].best_position, team->player[i].skill, team->player[i].fitness, team->player[i].form, team->player[i].position);
 	printf("|id| |your reserved players|               |MAIN POST|         |SKILL|      |FITNESS|        |FORM|       |CURRENT POST|\n");
-	for (i=0;i<team->noplayers-11;i++)
-			printf("%-5d%-40s%-20c%-13d%-17d%-15d%-10c\n",i+12, team->reserved_player[i].name, team->reserved_player[i].best_position, team->reserved_player[i].skill, team->reserved_player[i].fitness, team->reserved_player[i].form, team->reserved_player[i].position);
+	for (i = 0; i < team->noplayers - 11; i++)
+		printf("%-5d%-40s%-20c%-13d%-17d%-15d%-10c\n", i + 12, team->reserved_player[i].name, team->reserved_player[i].best_position, team->reserved_player[i].skill, team->reserved_player[i].fitness, team->reserved_player[i].form, team->reserved_player[i].position);
 
 }
-TEAM *search_team_by_id(TEAM *team,int id) {
+TEAM *search_team_by_id(TEAM *team, int id) {
 	int i;
 	for (i = 0; i < 16; i++) {
 		if (team[i].id == id) return &team[i];
@@ -369,8 +414,117 @@ void taviz(int id1, int id2, TEAM *team) {
 	else pl1 = &(team->player[id1]);
 	if (id2 >= 11) pl2 = &(team->reserved_player[id2 - 11]);
 	else pl2 = &(team->player[id2]);
-	change(pl1, pl2,0);
+	change(pl1, pl2, 0);
 }
-void toop(void) {
+void set_team_power(TEAM *team, TEAM *userteam) {
+	int i = 0;
+	int j = 0;
+	int counter = 0;
+	double attack = 0;
+	double defense = 0;
+	for (i = 0; i < 16; i++) {
+		attack = 0;
+		counter = 0;
+		if (team[i].id == (userteam->id)) {
+			for (j = 0; j < 11; j++) {
+				if ((userteam->player[j].position == 'A')) {
+					attack = userteam->player[j].skill*1.5 + attack;
+					counter++;
+				}
+				else if (userteam->player[j].position == 'M') {
+					attack = userteam->player[j].skill + attack;
+					counter++;
+				}
+			}
+			userteam->attack = attack / counter;
+		}
+
+		else {
+			counter = 0;
+			for (j = 0; j < 11; j++) {
+				if (team[i].player[j].position == 'A') {
+					attack = team[i].player[j].skill*1.5 + attack;
+					counter++;
+				}
+				else if (team[i].player[j].position == 'M') {
+					attack = team[i].player[j].skill + attack;
+					counter++;
+				}
+			}
+			team[i].attack = attack / counter;
+		}
+
+	}
+	for (i = 0; i < 16; i++) {
+		counter = 0;
+		defense = 0;
+		if (team[i].id == (userteam->id)) {
+			for (j = 0; j < 11; j++) {
+				if ((userteam->player[j].position == 'D')) {
+					defense = userteam->player[j].skill*1.5 + defense;
+					counter++;
+				}
+				else if (userteam->player[j].position == 'M') {
+					defense = userteam->player[j].skill + defense;
+					counter++;
+				}
+			}
+			userteam->deffense = defense / counter;
+		}
+		else {
+			counter = 0;
+			for (j = 0; j < 11; j++) {
+				if (team[i].player[j].position == 'D') {
+					defense = team[i].player[j].skill*1.5 + defense;
+					counter++;
+				}
+				else if (team[i].player[j].position == 'M') {
+					defense = team[i].player[j].skill + defense;
+					counter++;
+				}
+			}
+			team[i].deffense = defense / counter;
+		}
+	}
+}
+void start_match(TEAM *team, TEAM *userteam, int n) {
 
 }
+void simulation(TEAM *team, TEAM *userteam, int n) {
+	set_team_power(team, userteam);
+	int i = 0;
+	for (i = 0; i < 16; i++) {
+		if (team[i].id == userteam->id)
+			printf("team attack : %lf\tteam defense : %lf\n", userteam->attack, userteam->deffense);
+		else printf("team attack : %lf\tteam defense : %lf\n", team[i].attack, team[i].deffense);
+	}
+	start_match(team,userteam,n);
+}
+void lineup(TEAM *userteam) {
+	char input[50];
+		system("cls");
+		int a, b, c;
+		team_info(userteam);
+		printf("Now you can change your formation\n");
+		printf("Enter the number of deffense :");
+		scanf("%d", &a);
+		printf("Enter the number of halfback :");
+		scanf("%d", &b);
+		printf("Enter the number of attack :");
+		scanf("%d", &c);
+		formation(1, a, b, userteam);
+		team_info(userteam);
+		printf("\n\nNow you can change your players place or change them when finished enter -1:\n\n");
+		while (1) {
+			int id1, id2;
+			printf("Enter first player id :");
+			scanf("%d", &id1);
+			if (id1 == -1) break;
+			printf("Enter second player id :");
+			scanf("%d", &id2);
+			taviz(id1 - 1, id2 - 1, userteam);
+			team_info(userteam);
+		}
+}
+
+
