@@ -36,6 +36,6 @@ struct teamlist
 	int ga; //tedad gole khorde (goals against)
 	int gd; //tafazole gol (goal difference)
 	int place; //jaygah dar jadval
-	int noplayers;
+	int noplayers; //tedad kole bazi konan
 };
 typedef struct teamlist TEAM;
