@@ -14,7 +14,6 @@ int main() {
 	int j = 0;
 	int n = 0;
 	int choice = 0;
-	FILE *fp = NULL;
 	puts("Enter 1 for New league Or 2 for Load existing league:");
 	scanf("%d", &choice);
 	if (choice == 1) {

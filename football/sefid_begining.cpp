@@ -130,7 +130,7 @@ void set_skill(TEAM *team) {
 	int i = 0;
 	int j = 0;
 	for (i = 0; i < 11; i++) {
-		int rnd = (rand() * 100000) % 40 + 60;
+		int rnd = rand() % 40 + 60;
 		if (rnd > 80 && rnd < 90 && j < 3) {
 			team->player[i].skill = rnd;
 			set_other_skill(&(team->player[i]));
