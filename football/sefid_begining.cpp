@@ -217,7 +217,7 @@ void print(char str[50]) { //print function
 		i++;
 	}
 }
-void print_teams(TEAM *team) {
+void print_teams(TEAM *team) { //chap e team ha
 	int i;
 	for (i = 0; i < 16; i++) {
 		printf("%d.", team[i].id);
@@ -401,7 +401,7 @@ TEAM *search_team_by_id(TEAM *team, int id) {
 		if (team[i].id == id) return &team[i];
 	}
 }
-void teams_formation(int a, int c, int b, TEAM *team) {
+void teams_formation(TEAM *team) {
 	int i = 0;
 	for (i = 0; i < 16; i++) {
 		formation(1, 4, 3, &team[i]);

@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "Header.h"
 #include "defines.h"
-int main() {
+int main(){
 	TEAM *team;
 	TEAM userteam;
 	int id = 0;
@@ -19,7 +19,7 @@ int main() {
 	if (choice == 1) {
 		team = newleague(team);
 		print_teams(team);
-		teams_formation(1,4,3,team);
+		teams_formation(team);
 		printf("%s", "Please choose a team number : ");
 		scanf("%d", &id);
 		userteam = team[id - 1];
