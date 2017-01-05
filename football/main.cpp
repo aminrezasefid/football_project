@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "Header.h"
 #include "defines.h"
-int main() {
+int main(){
 	TEAM *team;
 	TEAM userteam;
 	int id = 0;
