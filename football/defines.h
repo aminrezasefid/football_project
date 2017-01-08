@@ -30,8 +30,8 @@ struct teamlist
 	int lost; //tedad bazi e bakhte
 	int drawn; //tedad bazi e mosavi shode
 	int formation; //tarkib e team
-	double attack; //miyangine defa
-	double deffense; //miyangin hamle
+	int attack; //defa
+	int deffense; //hamle
 	int gf; //tedad gole zade (goals for)
 	int ga; //tedad gole khorde (goals against)
 	int gd; //tafazole gol (goal difference)
