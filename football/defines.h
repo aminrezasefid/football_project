@@ -1,4 +1,16 @@
 #pragma once
+//*******tamam maghadire struct ha bayad save va load beshan********
+struct game_id {
+	int host_id;
+	int guest_id;
+};
+typedef struct game_id GAME_ID;
+struct week {
+	int games_in_week;
+	GAME_ID gid[240];
+	int current_game; 
+};
+typedef struct week WEEK;
 struct playerlist {
 	int id; //
 	int number; //shomare bazikon
