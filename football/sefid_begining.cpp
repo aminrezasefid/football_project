@@ -419,71 +419,58 @@ void taviz(int id1, int id2, TEAM *team) {
 void set_team_power(TEAM *team, TEAM *userteam) {
 	int i = 0;
 	int j = 0;
-	int counter = 0;
-	double attack = 0;
-	double defense = 0;
+	int attack = 0;
+	int defense = 0;
 	for (i = 0; i < 16; i++) {
 		attack = 0;
-		counter = 0;
 		if (team[i].id == (userteam->id)) {
 			for (j = 0; j < 11; j++) {
 				if ((userteam->player[j].position == 'A')) {
 					attack = userteam->player[j].skill*1.5 + attack;
-					counter++;
 				}
 				else if (userteam->player[j].position == 'M') {
 					attack = userteam->player[j].skill + attack;
-					counter++;
 				}
 			}
-			userteam->attack = attack / counter;
+			userteam->attack = attack;
 		}
 
 		else {
-			counter = 0;
 			for (j = 0; j < 11; j++) {
 				if (team[i].player[j].position == 'A') {
 					attack = team[i].player[j].skill*1.5 + attack;
-					counter++;
 				}
 				else if (team[i].player[j].position == 'M') {
 					attack = team[i].player[j].skill + attack;
-					counter++;
 				}
 			}
-			team[i].attack = attack / counter;
+			team[i].attack = attack;
 		}
 
 	}
 	for (i = 0; i < 16; i++) {
-		counter = 0;
 		defense = 0;
 		if (team[i].id == (userteam->id)) {
 			for (j = 0; j < 11; j++) {
 				if ((userteam->player[j].position == 'D')) {
 					defense = userteam->player[j].skill*1.5 + defense;
-					counter++;
 				}
 				else if (userteam->player[j].position == 'M') {
 					defense = userteam->player[j].skill + defense;
-					counter++;
 				}
 			}
-			userteam->deffense = defense / counter;
+			userteam->deffense = defense;
 		}
 		else {
-			counter = 0;
 			for (j = 0; j < 11; j++) {
 				if (team[i].player[j].position == 'D') {
 					defense = team[i].player[j].skill*1.5 + defense;
-					counter++;
 				}
 				else if (team[i].player[j].position == 'M') {
 					defense = team[i].player[j].skill + defense;
-					counter++;
 				}
 			}
-			team[i].deffense = defense / counter;
+			team[i].deffense = defense;
 		}
 	}
 }

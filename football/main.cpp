@@ -22,6 +22,7 @@ int main(){
 		teams_formation(team);
 		printf("%s", "Please choose a team number : ");
 		scanf("%d", &id);
+		fgets(input, 50, stdin); //khali kardane buffer
 		userteam = team[id - 1];
 	}
 	//else if (choice == 2) loadleague();
@@ -32,13 +33,15 @@ int main(){
 	delay(1);
 	while (1) {
 		printf("\n\nEnter your command : ");
-		scanf("%s", input);
-		if (strcmp(input, "exit")==0) break;
-		else if (strcmp(input, "lineup")==0) lineup(&userteam);
-		else if (strcmp(input, "table")==0) scoreboard(team,&userteam);
-		else if (strcmp(input, "save") == 0);//save();
-		else if (strcmp(input, "proceed")==0) {
-			scanf("%d", &n);
+		fgets(input,50,stdin);
+		if (strcmp(input, "exit\n")==0) break;
+		else if (strcmp(input, "lineup\n")==0) lineup(&userteam);
+		else if (strcmp(input, "table\n")==0) scoreboard(team,&userteam);
+		else if (strcmp(input, "save\n") == 0);//save();
+		else if (strstr(input, "proceed")!=NULL) {
+			//strtok(input, " ");
+			//strtok(NULL," ");
+			//printf("%s", input);
 			simulation(team,&userteam,n);
 		}
 		else continue;
