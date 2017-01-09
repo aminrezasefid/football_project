@@ -474,10 +474,35 @@ void set_team_power(TEAM *team, TEAM *userteam) {
 		}
 	}
 }
-void start_match(TEAM *team, TEAM *userteam, int n) {
+void play_game(TEAM *host, TEAM *guest) {
+	//reminder : set kardane gole zade khorde emtiaz va ...   . . . . . . .. .
 
 }
-void simulation(TEAM *team, TEAM *userteam, int n) {
+void weekly_games(WEEK *gamesweek, TEAM *team, TEAM *userteam) {
+	int nogames = gamesweek->games_in_week;
+	int cont = 0;
+	int i = 0;
+	for (i = 0; i < nogames; i++) {
+		cont = gamesweek->current_game;
+		TEAM *host = search_team_by_id(team, gamesweek->gid[cont].host_id);
+		TEAM *guest = search_team_by_id(team, gamesweek->gid[cont].guest_id);
+		if (userteam->id == host->id) host = userteam;
+		else if (userteam->id == guest->id) guest = userteam;
+		play_game(host, guest);
+		(gamesweek->current_game)++;
+	}
+}
+void match_process(WEEK *gamesweek,TEAM *team, TEAM *userteam, int n) {
+	int i = 0;
+	for (i = 0; i < n; i++) {
+	//chap tarikh bargozari bazi ha
+		weekly_games(gamesweek,team,userteam);
+		//chap natayej bazi
+	}
+	
+}
+
+void simulation(WEEK *gamesweek,TEAM *team, TEAM *userteam, int n) {
 	set_team_power(team, userteam);
 	int i = 0;
 	for (i = 0; i < 16; i++) {
@@ -485,7 +510,7 @@ void simulation(TEAM *team, TEAM *userteam, int n) {
 			printf("team attack : %lf\tteam defense : %lf\n", userteam->attack, userteam->deffense);
 		else printf("team attack : %lf\tteam defense : %lf\n", team[i].attack, team[i].deffense);
 	}
-	start_match(team,userteam,n);
+	match_process(gamesweek,team,userteam,n);
 }
 void lineup(TEAM *userteam) {
 	char input[50];

@@ -1,6 +1,9 @@
 #pragma once
 #pragma once
 #include "defines.h"
+void play_game(TEAM *host,TEAM *guest);
+void print_sched(TEAM *team, WEEK *gamesweek);
+void nextgames(TEAM *team,WEEK *gamesweek);
 void print(char str[50]);
 void delay(float secs);
 TEAM *newleague(TEAM *team);
@@ -20,7 +23,8 @@ void teams_formation(TEAM *team);
 void taviz(int id1, int id2, TEAM *team);
 void check_skill(PLAYER *player);
 void set_other_skill(PLAYER *player);
-void simulation(TEAM *team, TEAM *userteam, int n);
+void simulation(WEEK *gamesweek,TEAM *team, TEAM *userteam, int n);
 void set_team_power(TEAM *team, TEAM *userteam);
 void lineup(TEAM *userteam);
-void start_match(TEAM *team, TEAM *userteam, int n);
+void weekly_games(WEEK *gamesweek,TEAM *team, TEAM *userteam);
+void match_process(WEEK *gamesweek,TEAM *team, TEAM *userteam, int n);
