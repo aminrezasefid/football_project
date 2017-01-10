@@ -1,7 +1,11 @@
 #pragma once
 #pragma once
 #include "defines.h"
-void play_game(TEAM *host,TEAM *guest);
+void goal_process(TEAM *team1,TEAM *team2);
+void set_team_id(TEAM *team);
+int host_process(TEAM *host, TEAM *guest);
+int guest_process(TEAM *host, TEAM *guest);
+void play_game(TEAM *host,TEAM *guest,char *s);
 void print_sched(TEAM *team, WEEK *gamesweek);
 void nextgames(TEAM *team,WEEK *gamesweek);
 void print(char str[50]);
