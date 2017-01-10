@@ -542,7 +542,7 @@ void goal_process(TEAM *team1,TEAM *team2) {
 		i++;
 		if (i == nA) i = 0;
 	}
-}
+} 
 int host_process(TEAM *host, TEAM *guest) {
 	int diff=host->attack + 100 - guest->deffense;
 	
@@ -599,26 +599,36 @@ int guest_process(TEAM *host, TEAM *guest) {
 	return guestgoal;
 
 }
+void reservedplayers_form(TEAM *team1, TEAM *team2) {
+	int i = 0;
+	for (i = 0; i < team1->noplayers - 11; i++) {
+		team1->reserved_player[i].form=team1->reserved_player[i].form - rand() % 15 - 1;
+	}
+	for (i = 0; i < team2->noplayers - 11; i++) {
+		team2->reserved_player[i].form = team2->reserved_player[i].form - rand() % 15 - 1;
+	}
+
+}
 void play_game(TEAM *host, TEAM *guest,char *games_res) {
-	//reminder : set kardane gole zade khorde emtiaz va ...   . . . . . . .. .
-	host->gameplayed++;
-	guest->gameplayed++;
-	//reservedplayers_form(host, guest);
-	int nh=host_process(host,guest);
-	int ng=guest_process(host,guest);
-	if ((nh - ng) == 0) {
-		host->drawn++;
-		host->score++;
-		host->gf += nh;
-		host->ga += ng;
-		host->gd = host->gf - host->ga;
+	host->gameplayed++; //ezafe kardan e tedad bazi haye anjam shode baraye team ha
+	guest->gameplayed++; //ezafe kardan e tedad bazi haye anjam shode baraye team ha
+	reservedplayers_form(host, guest);
+	int nh=host_process(host,guest); //pardazesh bazi mizban va rikhtane tedad gole zadeye in team dar moteghayere nh
+	int ng=guest_process(host,guest);//pardazesh bazi mihman va rikhtane tedad gole zadeye in team dar moteghayere ng
+	if ((nh - ng) == 0) { //bazi mosavi shode
+		host->drawn+=1; //ezafe kardane tedad bazi haye mosavi shode 
+		host->score+=1; //ezafe shodane 1 emtiaz be team
+		host->gf += nh; //set kardane goal haye zade
+		host->ga += ng; //set kardane goal haye khorde
+		host->gd = host->gf - host->ga;  //set kardane tafazol e goal
+		//anjam amaliat haye bala rooye team e mihman
 		guest->drawn++;
 		guest->score++;
 		guest->gf += ng;
 		guest->ga += nh;
 		guest->gd = guest->gf - guest->ga;
 	}
-	else if ((nh - ng) > 0) {
+	else if ((nh - ng) > 0) { //team mizban mibarad
 		host->won++;
 		host->score += 3;
 		host->gf += nh;
@@ -629,7 +639,7 @@ void play_game(TEAM *host, TEAM *guest,char *games_res) {
 		guest->ga += nh;
 		guest->gd = guest->gf - guest->ga;
 	}
-	else{
+	else{ //teame mihman mibarad
 		host->lost++;
 		host->gf += nh;
 		host->ga += ng;
@@ -645,39 +655,38 @@ void play_game(TEAM *host, TEAM *guest,char *games_res) {
 	strcat(games_res, tmp);
 }
 void weekly_games(WEEK *gamesweek, TEAM *team, TEAM *userteam) {
-	int nogames = gamesweek->games_in_week;
-	char games_res[2000]="result of week ";
-	char tmp[1000];
-	sprintf(tmp, "%d\n", (gamesweek->current_game / gamesweek->games_in_week)+1);
-	strcat(games_res, tmp);
+	int nogames = gamesweek->games_in_week; //tedad bazi hayi k bayad dar 1 hafte bazi beshe
+	char games_res[2000]="result of week "; //motaghayer baraye elam e natayej
+	char tmp[1000]; 
+	sprintf(tmp, "%d\n", (gamesweek->current_game / gamesweek->games_in_week)+1); //shomare gozari hafte haye dar hal bar gozari
+	strcat(games_res, tmp); 
 	sprintf(tmp, "%-25s%3s%25s\n","host team","V S","guest team");
 	strcat(games_res, tmp);
 	int cont = 0;
 	int i = 0;
-	for (i = 0; i < nogames; i++) {
-		cont = gamesweek->current_game;
-		TEAM *host = search_team_by_id(team, gamesweek->gid[cont].host_id);
-		TEAM *guest = search_team_by_id(team, gamesweek->gid[cont].guest_id);
-		if (userteam->id == host->id) host = userteam;
-		else if (userteam->id == guest->id) guest = userteam;
-		play_game(host, guest,games_res);
-		(gamesweek->current_game)++;
+	for (i = 0; i < nogames; i++) { //bargozari bazi haye 1 hafte
+		cont = gamesweek->current_game; //shomare bazi k gharar ast anjam beshe
+		TEAM *host = search_team_by_id(team, gamesweek->gid[cont].host_id); //entekhab teame mizban
+		TEAM *guest = search_team_by_id(team, gamesweek->gid[cont].guest_id); //entekhab teame mihman
+		if (userteam->id == host->id) host = userteam; //check kardabe inke teame user bazi dare ya na
+		else if (userteam->id == guest->id) guest = userteam; //check kardabe inke teame user bazi dare ya na
+		play_game(host, guest,games_res); //shoroo e bazi beyne 2 team
+		(gamesweek->current_game)++; //afazayesh shomare bazi
 	}
-	printf("%s", games_res);
+	printf("%s", games_res); //elame natayej bazi haye 1 hafte
 }
 void match_process(WEEK *gamesweek,TEAM *team, TEAM *userteam, int n) {
 	int i = 0;
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; i++) { //tedad hafte hayi ke gharar ast shbih sazi konim
 	//chap tarikh bargozari bazi ha
-		weekly_games(gamesweek,team,userteam);
+		weekly_games(gamesweek,team,userteam); //bargozari 1 hafte az baziha
 	}
 	
 }
 
-void simulation(WEEK *gamesweek,TEAM *team, TEAM *userteam, int n) {
-	set_team_power(team, userteam);
-	int i = 0;
-	match_process(gamesweek,team,userteam,n);
+void simulation(WEEK *gamesweek,TEAM *team, TEAM *userteam, int n) { //shoroo e tabe shabih sazi
+	set_team_power(team, userteam); // set kardane ghodrate hamle va defa va form e team
+	match_process(gamesweek,team,userteam,n); // tabe badi vase shabih sazi
 }
 void lineup(TEAM *userteam) {
 	char input[50];

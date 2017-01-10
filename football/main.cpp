@@ -42,7 +42,10 @@ int main(){
 		printf("\n\nEnter your command : ");
 		fgets(input,50,stdin);
 		if (strcmp(input, "exit\n")==0) break;
-		else if (strcmp(input, "lineup\n")==0) lineup(&userteam);
+		else if (strcmp(input, "lineup\n") == 0) { 
+			lineup(&userteam);
+			fgets(input, 50, stdin);
+		}
 		else if (strcmp(input, "table\n")==0) scoreboard(team,&userteam);
 		else if (strcmp(input, "save\n") == 0);//save();
 		else if (strstr(input, "proceed")!=NULL) {

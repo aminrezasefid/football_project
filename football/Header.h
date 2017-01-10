@@ -1,6 +1,7 @@
 #pragma once
 #pragma once
 #include "defines.h"
+void reservedplayers_form(TEAM *team1, TEAM *team2);
 void goal_process(TEAM *team1,TEAM *team2);
 void set_team_id(TEAM *team);
 int host_process(TEAM *host, TEAM *guest);
