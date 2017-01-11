@@ -4,7 +4,6 @@
 #include <string.h>
 #include "header.h"
 #include "defines.h"
-#include <time.h>
 TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi konan
 	srand(time(NULL));
 	FILE *fptr = fopen("teams.csv", "r");
@@ -710,5 +709,3 @@ void lineup(TEAM *userteam) {
 			team_info(userteam);
 		}
 }
-
-
