@@ -1,5 +1,5 @@
 #pragma once
-//*******tamam maghadire struct ha bayad save va load beshan********
+//*******  tamam maghadire struct ha bayad save va load beshan   ********
 struct game_id {
 	int host_id;
 	int guest_id;
@@ -44,6 +44,7 @@ struct teamlist
 	int formation; //tarkib e team
 	int attack; //defa
 	int deffense; //hamle
+	int form; //roohiye team
 	int gf; //tedad gole zade (goals for)
 	int ga; //tedad gole khorde (goals against)
 	int gd; //tafazole gol (goal difference)

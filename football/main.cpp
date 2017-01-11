@@ -13,7 +13,7 @@ int main(){
 	team = (TEAM *)malloc(16 * sizeof(TEAM));
 	int i = 0;
 	int j = 0;
-	int n = 0; //tedad hafte
+	int n = 1; //tedad hafte
 	int n2 = 0; // tedad bazi haye hafte
 	int choice = 0;
 	puts("Enter 1 for New league Or 2 for Load existing league:");
@@ -22,14 +22,15 @@ int main(){
 		team = newleague(team);
 		print_teams(team);
 		teams_formation(team);
-		printf("%s", "Enter the games in a week : ");
-		scanf("%d", &n2);
-		games_week.games_in_week = n2;
 		games_week.current_game = 0;
 		printf("%s", "Please choose a team number : ");
 		scanf("%d", &id);
+		printf("%s", "Enter the games in a week : ");
+		scanf("%d", &n2);
+		games_week.games_in_week = n2;
 		fgets(input, 50, stdin); //khali kardane buffer
-		userteam = team[id - 1];
+		TEAM *tmp= search_team_by_id(team,id);
+		userteam = *tmp;
 	}
 	//else if (choice == 2) loadleague();
 	nextgames(team,&games_week);
@@ -45,9 +46,11 @@ int main(){
 		else if (strcmp(input, "table\n")==0) scoreboard(team,&userteam);
 		else if (strcmp(input, "save\n") == 0);//save();
 		else if (strstr(input, "proceed")!=NULL) {
-			//strtok(input, " ");
-			//strtok(NULL," ");
-			//printf("%s", input);
+			strtok(input," ");
+			char *tmp = strtok(NULL, " ");
+			if (tmp != NULL) {
+				n = atoi(tmp);
+			}
 			simulation(&games_week,team,&userteam,n);
 		}
 		else continue;

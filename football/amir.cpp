@@ -11,8 +11,8 @@ void print_sched(TEAM *team, WEEK *gamesweek) {
 	}
 }
 void nextgames(TEAM *team,WEEK *gamesweek) {
-	int i = 0;
 	int j = 0;
+	int i = gamesweek->current_game;
 	FILE *fp = fopen("schedule.txt", "r");
 	for (i = 0; i < 120; i++) {
 		fscanf(fp, "%d%d", &(gamesweek->gid[i].host_id), &(gamesweek->gid[i].guest_id));
