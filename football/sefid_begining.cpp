@@ -440,10 +440,10 @@ void set_team_power(TEAM *team, TEAM *userteam) {
 		if (team[i].id == (userteam->id)) {
 			for (j = 0; j < 11; j++) {
 				if ((userteam->player[j].position == 'A')) {
-					attack = userteam->player[j].skill*1.5 + attack;
+					attack = (userteam->player[j].skill*1.5 +userteam->player[j].fitness)/2 + attack;
 				}
 				else if (userteam->player[j].position == 'M') {
-					attack = userteam->player[j].skill + attack;
+					attack =( userteam->player[j].skill + userteam->player[j].fitness )/2+ attack;
 				}
 			}
 			userteam->attack = attack;
@@ -452,10 +452,10 @@ void set_team_power(TEAM *team, TEAM *userteam) {
 		else {
 			for (j = 0; j < 11; j++) {
 				if (team[i].player[j].position == 'A') {
-					attack = team[i].player[j].skill*1.5 + attack;
+					attack = (team[i].player[j].skill*1.5 + team[i].player[j].fitness)/2 + attack;
 				}
 				else if (team[i].player[j].position == 'M') {
-					attack = team[i].player[j].skill + attack;
+					attack = (team[i].player[j].skill + team[i].player[j].fitness) / 2 + attack;
 				}
 			}
 			team[i].attack = attack;
@@ -467,10 +467,10 @@ void set_team_power(TEAM *team, TEAM *userteam) {
 		if (team[i].id == (userteam->id)) {
 			for (j = 0; j < 11; j++) {
 				if ((userteam->player[j].position == 'D')) {
-					defense = userteam->player[j].skill*1.5 + defense;
+					defense = (userteam->player[j].skill*1.5 + userteam->player[j].fitness)/2 + defense;
 				}
 				else if (userteam->player[j].position == 'M') {
-					defense = userteam->player[j].skill + defense;
+					defense = (userteam->player[j].skill + userteam->player[j].fitness) / 2 + defense;
 				}
 			}
 			userteam->deffense = defense;
@@ -478,10 +478,10 @@ void set_team_power(TEAM *team, TEAM *userteam) {
 		else {
 			for (j = 0; j < 11; j++) {
 				if (team[i].player[j].position == 'D') {
-					defense = team[i].player[j].skill*1.5 + defense;
+					defense = (team[i].player[j].skill*1.5 + team[i].player[j].fitness)/2+ defense;
 				}
 				else if (team[i].player[j].position == 'M') {
-					defense = team[i].player[j].skill + defense;
+					defense = (team[i].player[j].skill + team[i].player[j].fitness) / 2 + defense;
 				}
 			}
 			team[i].deffense = defense;
@@ -563,8 +563,6 @@ int host_process(TEAM *host, TEAM *guest) {
 	for (i = 0; i < probable_goal; i++) {
 		int cal = rand() % 100 + 1;
 		if (cal < probablity) {
-			host->gf+=1;
-			guest->ga+=1;
 			goal_process(host,guest);
 			hostgoal++;
 		}
@@ -590,8 +588,6 @@ int guest_process(TEAM *host, TEAM *guest) {
 	for (i = 0; i < probable_goal; i++) {
 		int cal = rand() % 100 + 1;
 		if (cal < probablity) {
-			guest->gf+=1;
-			host->ga+=1;
 			goal_process(guest, host);
 			guestgoal++;
 		}
@@ -602,10 +598,10 @@ int guest_process(TEAM *host, TEAM *guest) {
 void reservedplayers_form(TEAM *team1, TEAM *team2) {
 	int i = 0;
 	for (i = 0; i < team1->noplayers - 11; i++) {
-		team1->reserved_player[i].form=team1->reserved_player[i].form - rand() % 15 - 1;
+		team1->reserved_player[i].form=team1->reserved_player[i].form - rand() % 10 - 1;
 	}
 	for (i = 0; i < team2->noplayers - 11; i++) {
-		team2->reserved_player[i].form = team2->reserved_player[i].form - rand() % 15 - 1;
+		team2->reserved_player[i].form = team2->reserved_player[i].form - rand() % 10 - 1;
 	}
 
 }
