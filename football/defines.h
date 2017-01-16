@@ -1,4 +1,16 @@
 #pragma once
+//*******  tamam maghadire struct ha bayad save va load beshan   ********
+struct game_id {
+	int host_id;
+	int guest_id;
+};
+typedef struct game_id GAME_ID;
+struct week {
+	int games_in_week;
+	GAME_ID gid[240];
+	int current_game; 
+};
+typedef struct week WEEK;
 struct playerlist {
 	int id; //
 	int number; //shomare bazikon
@@ -30,8 +42,9 @@ struct teamlist
 	int lost; //tedad bazi e bakhte
 	int drawn; //tedad bazi e mosavi shode
 	int formation; //tarkib e team
-	double attack; //miyangine defa
-	double deffense; //miyangin hamle
+	int attack; //defa
+	int deffense; //hamle
+	int form; //roohiye team
 	int gf; //tedad gole zade (goals for)
 	int ga; //tedad gole khorde (goals against)
 	int gd; //tafazole gol (goal difference)

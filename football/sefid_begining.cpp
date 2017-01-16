@@ -4,7 +4,6 @@
 #include <string.h>
 #include "header.h"
 #include "defines.h"
-#include <time.h>
 TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi konan
 	srand(time(NULL));
 	FILE *fptr = fopen("teams.csv", "r");
@@ -12,7 +11,7 @@ TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi 
 	for (i = 0; i < 16; i++) {
 		fgets(team[i].teamname, sizeof(team[i].teamname), fptr);
 		strtok(team[i].teamname, "\n");
-		team[i].id = i + 1;
+		set_team_id(&team[i]);
 		team[i].score = 0;
 		team[i].gameplayed = 0;
 		team[i].won = 0;
@@ -23,6 +22,7 @@ TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi 
 		team[i].ga = 0;
 		team[i].place = 1;
 		team[i].formation = 1;
+		team[i].form = 0;
 		char file[50];
 		char file2[50] = "";
 		strcpy(file, team[i].teamname);
@@ -81,6 +81,16 @@ TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi 
 	}
 	fclose(fptr);
 	return team;
+}
+void set_team_id(TEAM *team) {
+	static int a[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+	static int i = 15;
+	int j=rand() % (i + 1);
+	team->id = a[j];
+	int tmp = a[j];
+	a[j] = a[i];
+	a[i] = tmp;
+	i--;
 }
 void set_fitness(TEAM *team) {
 	int i = 0;
@@ -225,8 +235,10 @@ void print_teams(TEAM *team) { //chap e team ha
 		print("\n");
 	}
 }
-void sort_team(TEAM *team) {
+void sort_team(TEAM *team,TEAM *userteam) {
 	int i = 0, j = 0;
+	TEAM *a=search_team_by_id(team, userteam->id);
+	*a = *userteam;
 	for (i = 0; i < 16; i++) { //sort teams
 		for (j = i; j < 16; j++) {
 			if (team[i].score < team[j].score) {
@@ -253,16 +265,16 @@ void swap(TEAM *a, TEAM *b) {
 }
 void scoreboard(TEAM *team, TEAM *userteam) {
 	int i = 0, j = 0;
-	sort_team(team);
+	sort_team(team,userteam);
 	print("TEAM                     SCORE    WON    DRAWN     LOST    GF    GA    GD\n"); //print teams
 	for (i = 0; i < 16; i++) {
 		team[i].place = i + 1;
 		if (team[i].id == userteam->id) {
-			printf("my team : %-15s%-9d%-7d%-10d%-8d%-6d%-6d%-5d\n", team[i].teamname, team[i].score, team[i].score, team[i].won, team[i].drawn, team[i].lost, team[i].gf, team[i].ga, team[i].gd);
+			printf("my team : %-15s%-9d%-7d%-10d%-8d%-6d%-6d%-5d\n", team[i].teamname, team[i].score, team[i].won, team[i].drawn, team[i].lost, team[i].gf, team[i].ga, team[i].gd);
 			userteam->place = i + 1;
 			continue;
 		}
-		printf("%-25s%-9d%-7d%-10d%-8d%-6d%-6d%-5d\n", team[i].teamname, team[i].score, team[i].score, team[i].won, team[i].drawn, team[i].lost, team[i].gf, team[i].ga, team[i].gd);
+		printf("%-25s%-9d%-7d%-10d%-8d%-6d%-6d%-5d\n", team[i].teamname, team[i].score, team[i].won, team[i].drawn, team[i].lost, team[i].gf, team[i].ga, team[i].gd);
 	}
 }
 PLAYER *find_bestplayer(TEAM *team, char pos, int zakhire) {
@@ -419,86 +431,257 @@ void taviz(int id1, int id2, TEAM *team) {
 void set_team_power(TEAM *team, TEAM *userteam) {
 	int i = 0;
 	int j = 0;
-	int counter = 0;
-	double attack = 0;
-	double defense = 0;
+	int attack = 0;
+	int defense = 0;
+	int form = 0;
 	for (i = 0; i < 16; i++) {
 		attack = 0;
-		counter = 0;
 		if (team[i].id == (userteam->id)) {
 			for (j = 0; j < 11; j++) {
 				if ((userteam->player[j].position == 'A')) {
-					attack = userteam->player[j].skill*1.5 + attack;
-					counter++;
+					attack = (userteam->player[j].skill*1.5 +userteam->player[j].fitness)/2 + attack;
 				}
 				else if (userteam->player[j].position == 'M') {
-					attack = userteam->player[j].skill + attack;
-					counter++;
+					attack =( userteam->player[j].skill + userteam->player[j].fitness )/2+ attack;
 				}
 			}
-			userteam->attack = attack / counter;
+			userteam->attack = attack;
 		}
 
 		else {
-			counter = 0;
 			for (j = 0; j < 11; j++) {
 				if (team[i].player[j].position == 'A') {
-					attack = team[i].player[j].skill*1.5 + attack;
-					counter++;
+					attack = (team[i].player[j].skill*1.5 + team[i].player[j].fitness)/2 + attack;
 				}
 				else if (team[i].player[j].position == 'M') {
-					attack = team[i].player[j].skill + attack;
-					counter++;
+					attack = (team[i].player[j].skill + team[i].player[j].fitness) / 2 + attack;
 				}
 			}
-			team[i].attack = attack / counter;
+			team[i].attack = attack;
 		}
 
 	}
 	for (i = 0; i < 16; i++) {
-		counter = 0;
 		defense = 0;
 		if (team[i].id == (userteam->id)) {
 			for (j = 0; j < 11; j++) {
 				if ((userteam->player[j].position == 'D')) {
-					defense = userteam->player[j].skill*1.5 + defense;
-					counter++;
+					defense = (userteam->player[j].skill*1.5 + userteam->player[j].fitness)/2 + defense;
 				}
 				else if (userteam->player[j].position == 'M') {
-					defense = userteam->player[j].skill + defense;
-					counter++;
+					defense = (userteam->player[j].skill + userteam->player[j].fitness) / 2 + defense;
 				}
 			}
-			userteam->deffense = defense / counter;
+			userteam->deffense = defense;
 		}
 		else {
-			counter = 0;
 			for (j = 0; j < 11; j++) {
 				if (team[i].player[j].position == 'D') {
-					defense = team[i].player[j].skill*1.5 + defense;
-					counter++;
+					defense = (team[i].player[j].skill*1.5 + team[i].player[j].fitness)/2+ defense;
 				}
 				else if (team[i].player[j].position == 'M') {
-					defense = team[i].player[j].skill + defense;
-					counter++;
+					defense = (team[i].player[j].skill + team[i].player[j].fitness) / 2 + defense;
 				}
 			}
-			team[i].deffense = defense / counter;
+			team[i].deffense = defense;
 		}
 	}
+	for (i = 0; i < 16; i++) {
+		form = 0;
+		if (team[i].id == (userteam->id)) {
+			for (j = 0; j < 11; j++) {
+				userteam->form=userteam->form +userteam->player[j].form;
+			}
+			
+		}
+
+		else {
+			for (j = 0; j < 11; j++) {
+				team[i].form =team[i].form + team[i].player[j].form;
+			}
+		}
+
+	}
 }
-void start_match(TEAM *team, TEAM *userteam, int n) {
+void goal_process(TEAM *team1,TEAM *team2) {
+	PLAYER *attacker[6];
+	PLAYER *defenser[7];
+
+	int j = 0;
+	int i = 0;
+	for (i = 0; i < 11; i++) {
+		if (team1->player[i].position == 'A') {
+			attacker[j] = &(team1->player[i]);
+			j++;
+		}
+	}
+	int nA = j;
+	j = 0;
+	for (i = 0; i < 11; i++) {
+		if (team2->player[i].position == 'D' || team2->player[i].position == 'G') {
+			defenser[j] = &(team2->player[i]);
+			defenser[j]->form=defenser[j]->form - (rand() % 15);
+			j++;
+		}
+	}
+	i = 0;
+	int probabality = 0;
+	while (1) {
+		if (attacker[i]->form > 170) probabality = 50;
+		else if (attacker[i]->form > 140) probabality = 40;
+		else if (attacker[i]->form > 110) probabality = 30;
+		else if (attacker[i]->form > 80) probabality = 20;
+		else if (attacker[i]->form > 50) probabality = 10;
+		else probabality = 5;
+		int cal=rand() % 100 + 1;
+		if (cal < probabality) {
+			attacker[i]->newgoal++;
+			break;
+		}
+		i++;
+		if (i == nA) i = 0;
+	}
+} 
+int host_process(TEAM *host, TEAM *guest) {
+	int diff=host->attack + 100 - guest->deffense;
+	
+	int probable_goal = 0;
+	int probablity = 0;
+	int hostgoal = 0;
+	if (diff > 30) probable_goal = rand() % 3 + 3;
+	else if (diff > 20) probable_goal = rand()%2+2;
+	else if (diff > -15) probable_goal = 1;
+	int i = 0;
+	if ((host->form - guest->form ) > 200) probablity = 80;
+	else if ((host->form - guest->form) > 100) probablity = 70;
+	else if ((host->form - guest->form) > 50) probablity = 60;
+	else if ((host->form - guest->form) > 0) probablity = 50;
+	else if ((host->form - guest->form) > -50) probablity = 40;
+	else probablity = 30;
+	probablity = probablity + 15;
+	for (i = 0; i < probable_goal; i++) {
+		int cal = rand() % 100 + 1;
+		if (cal < probablity) {
+			goal_process(host,guest);
+			hostgoal++;
+		}
+	}
+	return hostgoal;
+}
+int guest_process(TEAM *host, TEAM *guest) {
+	int diff = guest->attack + 100 - host->deffense;
+
+	int probable_goal = 0;
+	int probablity = 0;
+	int guestgoal = 0;
+	if (diff > 30) probable_goal = rand() % 3 + 3;
+	else if (diff > 20) probable_goal = rand() % 2 + 2;
+	else if (diff > -15) probable_goal = 1;
+	int i = 0;
+	if ((guest->form - host->form) > 200) probablity = 80;
+	else if ((guest->form - host->form) > 100) probablity = 70;
+	else if ((guest->form - host->form) > 50) probablity = 60;
+	else if ((guest->form - host->form) > 0) probablity = 50;
+	else if ((guest->form - host->form) > -50) probablity = 40;
+	else probablity = 30;
+	for (i = 0; i < probable_goal; i++) {
+		int cal = rand() % 100 + 1;
+		if (cal < probablity) {
+			goal_process(guest, host);
+			guestgoal++;
+		}
+	}
+	return guestgoal;
 
 }
-void simulation(TEAM *team, TEAM *userteam, int n) {
-	set_team_power(team, userteam);
+void reservedplayers_form(TEAM *team1, TEAM *team2) {
 	int i = 0;
-	for (i = 0; i < 16; i++) {
-		if (team[i].id == userteam->id)
-			printf("team attack : %lf\tteam defense : %lf\n", userteam->attack, userteam->deffense);
-		else printf("team attack : %lf\tteam defense : %lf\n", team[i].attack, team[i].deffense);
+	for (i = 0; i < team1->noplayers - 11; i++) {
+		team1->reserved_player[i].form=team1->reserved_player[i].form - rand() % 10 - 1;
 	}
-	start_match(team,userteam,n);
+	for (i = 0; i < team2->noplayers - 11; i++) {
+		team2->reserved_player[i].form = team2->reserved_player[i].form - rand() % 10 - 1;
+	}
+
+}
+void play_game(TEAM *host, TEAM *guest,char *games_res) {
+	host->gameplayed++; //ezafe kardan e tedad bazi haye anjam shode baraye team ha
+	guest->gameplayed++; //ezafe kardan e tedad bazi haye anjam shode baraye team ha
+	reservedplayers_form(host, guest);
+	int nh=host_process(host,guest); //pardazesh bazi mizban va rikhtane tedad gole zadeye in team dar moteghayere nh
+	int ng=guest_process(host,guest);//pardazesh bazi mihman va rikhtane tedad gole zadeye in team dar moteghayere ng
+	if ((nh - ng) == 0) { //bazi mosavi shode
+		host->drawn+=1; //ezafe kardane tedad bazi haye mosavi shode 
+		host->score+=1; //ezafe shodane 1 emtiaz be team
+		host->gf += nh; //set kardane goal haye zade
+		host->ga += ng; //set kardane goal haye khorde
+		host->gd = host->gf - host->ga;  //set kardane tafazol e goal
+		//anjam amaliat haye bala rooye team e mihman
+		guest->drawn++;
+		guest->score++;
+		guest->gf += ng;
+		guest->ga += nh;
+		guest->gd = guest->gf - guest->ga;
+	}
+	else if ((nh - ng) > 0) { //team mizban mibarad
+		host->won++;
+		host->score += 3;
+		host->gf += nh;
+		host->ga += ng;
+		host->gd = host->gf - host->ga;
+		guest->lost++;
+		guest->gf += ng;
+		guest->ga += nh;
+		guest->gd = guest->gf - guest->ga;
+	}
+	else{ //teame mihman mibarad
+		host->lost++;
+		host->gf += nh;
+		host->ga += ng;
+		host->gd = host->gf - host->ga;
+		guest->won++;
+		guest->score += 3;
+		guest->gf += ng;
+		guest->ga += nh;
+		guest->gd = guest->gf - guest->ga;
+	}
+	char tmp[100];
+	sprintf(tmp, "%-25s%d-%d%25s\n", host->teamname, nh, ng, guest->teamname);
+	strcat(games_res, tmp);
+}
+void weekly_games(WEEK *gamesweek, TEAM *team, TEAM *userteam) {
+	int nogames = gamesweek->games_in_week; //tedad bazi hayi k bayad dar 1 hafte bazi beshe
+	char games_res[2000]="result of week "; //motaghayer baraye elam e natayej
+	char tmp[1000]; 
+	sprintf(tmp, "%d\n", (gamesweek->current_game / gamesweek->games_in_week)+1); //shomare gozari hafte haye dar hal bar gozari
+	strcat(games_res, tmp); 
+	sprintf(tmp, "%-25s%3s%25s\n","host team","V S","guest team");
+	strcat(games_res, tmp);
+	int cont = 0;
+	int i = 0;
+	for (i = 0; i < nogames; i++) { //bargozari bazi haye 1 hafte
+		cont = gamesweek->current_game; //shomare bazi k gharar ast anjam beshe
+		TEAM *host = search_team_by_id(team, gamesweek->gid[cont].host_id); //entekhab teame mizban
+		TEAM *guest = search_team_by_id(team, gamesweek->gid[cont].guest_id); //entekhab teame mihman
+		if (userteam->id == host->id) host = userteam; //check kardabe inke teame user bazi dare ya na
+		else if (userteam->id == guest->id) guest = userteam; //check kardabe inke teame user bazi dare ya na
+		play_game(host, guest,games_res); //shoroo e bazi beyne 2 team
+		(gamesweek->current_game)++; //afazayesh shomare bazi
+	}
+	printf("%s", games_res); //elame natayej bazi haye 1 hafte
+}
+void match_process(WEEK *gamesweek,TEAM *team, TEAM *userteam, int n) {
+	int i = 0;
+	for (i = 0; i < n; i++) { //tedad hafte hayi ke gharar ast shbih sazi konim
+	//chap tarikh bargozari bazi ha
+		weekly_games(gamesweek,team,userteam); //bargozari 1 hafte az baziha
+	}
+	
+}
+
+void simulation(WEEK *gamesweek,TEAM *team, TEAM *userteam, int n) { //shoroo e tabe shabih sazi
+	set_team_power(team, userteam); // set kardane ghodrate hamle va defa va form e team
+	match_process(gamesweek,team,userteam,n); // tabe badi vase shabih sazi
 }
 void lineup(TEAM *userteam) {
 	char input[50];
@@ -526,5 +709,3 @@ void lineup(TEAM *userteam) {
 			team_info(userteam);
 		}
 }
-
-
