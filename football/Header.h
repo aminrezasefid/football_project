@@ -1,6 +1,10 @@
 #pragma once
 #pragma once
 #include "defines.h"
+PLAYER *search_player_by_id(TEAM *team, int id);
+void sort_player(PLAYER *plr, int n);
+void ranking(TEAM *team, char post);
+void ranking_player(TEAM *team);
 void check_formation(TEAM *team);
 void graph_loading(void);
 void change_feature(TEAM *a, TEAM *b);

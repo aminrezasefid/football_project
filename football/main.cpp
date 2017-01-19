@@ -42,6 +42,7 @@ int main() {
 	}*/
 	nextgames(team, &games_week);
 	scoreboard(team, &userteam);
+	ranking_player(&userteam);
 	printf("\n\n\n|your place in Table: %-2d|\n", userteam.place);
 	SetColor(1);
 	printf("You are entering managing mode");
