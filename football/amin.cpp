@@ -54,9 +54,10 @@ TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi 
 				team[i].player[j].goal = 0;
 				team[i].player[j].newgoal = 0;
 				team[i].player[j].main = 1;
+				team[i].player[j].rank = 1;
 			}
 			else {
-				team[i].reserved_player[j - 11].id = j;
+				team[i].reserved_player[j - 11].id = j+1;
 				char *ch;
 				int ret = strtod(buffer, &ch);
 				team[i].reserved_player[j - 11].number = ret;
@@ -71,6 +72,7 @@ TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi 
 				team[i].reserved_player[j - 11].goal = 0;
 				team[i].reserved_player[j - 11].newgoal = 0;
 				team[i].reserved_player[j - 11].main = -1;
+				team[i].reserved_player[j - 11].rank = 1;
 			}
 			j++;
 		}
@@ -669,6 +671,7 @@ void play_game(TEAM *host, TEAM *guest) {
 		guest->gd = guest->gf - guest->ga;
 	}
 	else { //teame mihman mibarad
+		change_feature(guest, host);
 		host->lost++;
 		host->gf += nh;
 		host->ga += ng;

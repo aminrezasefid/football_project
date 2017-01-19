@@ -29,6 +29,7 @@ struct playerlist {
 	int M_skill; // maharate hafback
 	int A_skill; // maharate hamle
 	int max_fitness;//maximum ghodrat badani
+	int rank;
 };
 typedef struct playerlist PLAYER;
 struct teamlist
