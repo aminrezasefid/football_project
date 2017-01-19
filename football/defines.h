@@ -8,7 +8,7 @@ typedef struct game_id GAME_ID;
 struct week {
 	int games_in_week;
 	GAME_ID gid[240];
-	int current_game; 
+	int current_game;
 };
 typedef struct week WEEK;
 struct playerlist {
@@ -17,7 +17,7 @@ struct playerlist {
 	char name[50]; //esme bazikon
 	int skill;
 	int fitness;
-	int form; 
+	int form;
 	int newgoal; //tedad gole zade dar bazi e akhar
 	int age; //sen
 	int goal; //tedad gole zade
@@ -28,6 +28,7 @@ struct playerlist {
 	int D_skill; //maharate defa
 	int M_skill; // maharate hafback
 	int A_skill; // maharate hamle
+	int max_fitness;//maximum ghodrat badani
 };
 typedef struct playerlist PLAYER;
 struct teamlist
