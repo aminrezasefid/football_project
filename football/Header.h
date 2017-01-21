@@ -1,6 +1,11 @@
 #pragma once
 #pragma once
 #include "defines.h"
+TEAM *loadleague(TEAM *team, WEEK *gamesweek);
+PLAYER mr_goal(TEAM *team, TEAM *userteam);
+PLAYER sort_goaler(PLAYER *goalers);
+void save(WEEK games_week, TEAM *team,TEAM *userteam);
+void calendar(char x[], size_t size);
 PLAYER *search_player_by_id(TEAM *team, int id);
 void sort_player(PLAYER *plr, int n);
 void ranking(TEAM *team, char post);
@@ -25,7 +30,7 @@ TEAM *newleague(TEAM *team);
 void print_teams(TEAM *team);
 void scoreboard(TEAM *team, TEAM *userteam);
 void swap(TEAM *a, TEAM *b);
-void formation(int a, int c, int b, TEAM *team);
+void formation(int a, int c, int b,int d, TEAM *team);
 void position(int n, TEAM *team, char pos);
 PLAYER *find_bestplayer(TEAM *team, char pos, int zakhire);
 PLAYER *find_wrostplayer(TEAM *team, char pos, int zakhire);
