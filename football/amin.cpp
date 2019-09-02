@@ -5,34 +5,6 @@
 #include <Windows.h>
 #include "header.h"
 #include "defines.h"
-PLAYER sort_goaler(PLAYER *goalers) {
-	int i = 0;
-	PLAYER bst_goaler;
-	bst_goaler = goalers[0];
-	for (i = 1; i < 16; i++) {
-		if (goalers[i].goal > bst_goaler.goal) bst_goaler = goalers[i];
-	}
-	return bst_goaler;
-}
-PLAYER mr_goal(TEAM *team, TEAM *userteam) {
-	int i = 0;
-	int j = 0;
-	PLAYER goaler[16];
-	for (i = 0; i < 16; i++) {
-		TEAM *t;
-		if (team[i].id == userteam->id) t = userteam;
-		else t = team + i;
-		goaler[i]=t->player[0];
-		for (j = 1; j<11; j++) {
-			if (t->player[j].goal > goaler[i].goal) goaler[i] = t->player[j];
-		}
-		for (j = 1; j < t->noplayers - 11; j++) {
-			if (t->reserved_player[j].goal > goaler[i].goal) goaler[i] = t->reserved_player[j];
-		}
-	}
-	PLAYER best = sort_goaler(goaler);
-	return best;
-}
 TEAM *newleague(TEAM *team) { //tabe baraye khandane etela'at e team ha va bazi konan
 	srand(time(NULL));
 	FILE *fptr = fopen("teams.csv", "r");
@@ -377,22 +349,9 @@ void change(PLAYER *player1, PLAYER *player2, int def) {
 void position(int n, TEAM *team, char pos) {
 	int i = 0;
 	int j = 0;
-	int total_player = 0;
 	for (j = 0; j < 11; j++)
 		if (team->player[j].position == pos) i++;
-	for (j = 0; j < 11; j++) {
-		if (team->player[j].best_position == pos) total_player++;
-	}
-	for (j = 0; j < team->noplayers - 11; j++) {
-		if (team->reserved_player[j].best_position == pos) total_player++;
-	}
-	if (n > total_player) {
-		printf("there is not enough player in post %c !!!!", pos);
-		delay(2);
-		lineup(team);
-	}
 	j = 0;
-	
 	char nxtpos;
 	PLAYER *wplayer;
 	PLAYER *bplayer;
@@ -425,12 +384,7 @@ void position(int n, TEAM *team, char pos) {
 		}
 	}
 }
-void formation(int a, int b, int c,int d, TEAM *team) {
-	if (a + b + c + d> 11) {
-		printf("\n\n\nincorrect number of players !!!!\n\n\n");
-		delay(1);
-		lineup(team);
-	}
+void formation(int a, int b, int c, TEAM *team) {
 	position(a, team, 'G');
 	position(b, team, 'D');
 	position(c, team, 'M');
@@ -464,7 +418,7 @@ TEAM *search_team_by_id(TEAM *team, int id) {
 void teams_formation(TEAM *team) {
 	int i = 0;
 	for (i = 0; i < 16; i++) {
-		formation(1, 4, 3, 3,&team[i]);
+		formation(1, 4, 3, &team[i]);
 	}
 }
 void taviz(int id1, int id2, TEAM *team) {
@@ -659,7 +613,6 @@ void find_goaler(PLAYER *goaler, TEAM *team) {
 	int j = 0;
 	for (i = 0; i < 11; i++) {
 		if (team->player[i].newgoal != 0) {
-			team->player[i].goal = team->player[i].goal + team->player[i].newgoal;
 			goaler[j] = team->player[i];
 			team->player[i].newgoal = 0;
 			j++;
@@ -760,7 +713,7 @@ void play_game(TEAM *host, TEAM *guest) {
 		j = j + host_goaler[i].newgoal + guest_goaler[i].newgoal;
 		i++;
 	}
-	printf("\n\n");
+	//printf("%s", tmp);
 	//strcat(games_res, tmp);
 }
 void check_formation(TEAM *team) {
@@ -775,22 +728,17 @@ void check_formation(TEAM *team) {
 }
 void weekly_games(WEEK *gamesweek, TEAM *team, TEAM *userteam) {
 	int nogames = gamesweek->games_in_week; //tedad bazi hayi k bayad dar 1 hafte bazi beshe
-	char date[100] = {};
-	calendar(date, 50);
-	char *firstday;
-	char *secondday;
-	firstday=strtok(date,",");
-	secondday = strtok(NULL, ",");
 	char games_res[2000] = "result of week "; //motaghayer baraye elam e natayej
+	char date[50];
 	char tmp[1000];
-	if (gamesweek->current_game >=240) {		
+	if (gamesweek->current_game >=240) {
 		printf("The league is over , do you want to start a new league?(yes/no) ");
 		char choose[5];
 		scanf("%s", choose);
 		if (strcmp(choose, "yes") == 0) newleague(team);
 		else return;
 	}
-	sprintf(tmp, "%d\nDate: %s\n", (gamesweek->current_game / gamesweek->games_in_week) + 1,firstday); //shomare gozari hafte haye dar hal bar gozari
+	sprintf(tmp, "%d\n", (gamesweek->current_game / gamesweek->games_in_week) + 1); //shomare gozari hafte haye dar hal bar gozari
 	strcat(games_res, tmp);
 	SetColor(1);
 	printf("%s", games_res);
@@ -802,9 +750,6 @@ void weekly_games(WEEK *gamesweek, TEAM *team, TEAM *userteam) {
 	printf("%s", tmp); //elame natayej bazi haye 1 hafte
 	SetColor(15);
 	for (i = 0; i < nogames; i++) { //bargozari bazi haye 1 hafte
-		SetColor(1);
-		if (i == 4) printf("Date:%s\n", secondday);
-		SetColor(15);
 		cont = gamesweek->current_game; //shomare bazi k gharar ast anjam beshe
 		TEAM *host = search_team_by_id(team, gamesweek->gid[cont].host_id); //entekhab teame mizban
 		TEAM *guest = search_team_by_id(team, gamesweek->gid[cont].guest_id); //entekhab teame mihman
@@ -822,12 +767,6 @@ void weekly_games(WEEK *gamesweek, TEAM *team, TEAM *userteam) {
 		}
 		play_game(host, guest); //shoroo e bazi beyne 2 team
 		(gamesweek->current_game)++; //afazayesh shomare bazi
-	}
-	if ((gamesweek->current_game / gamesweek->games_in_week) + 1 > 30) {
-	PLAYER best=mr_goal(team, userteam);
-		SetColor(4);
-		printf("The Master Of Goal Is %s With %d Goal\n", best.name, best.goal);
-		SetColor(15);
 	}
 }
 void match_process(WEEK *gamesweek, TEAM *team, TEAM *userteam, int n) {
@@ -869,53 +808,36 @@ void lineup(TEAM *userteam) {
 	int a, b, c;
 	team_info(userteam);
 	SetColor(1);
-	int choice = 0;
-	while (1){
-	do {
-		printf("Enter 1 for changing the formation or 2 for substitution or 0 to go back: ");
+	printf("Now you can change your formation\n");
+	SetColor(10);
+	printf("Enter the number of deffense :");
+	SetColor(15);
+	scanf("%d", &a);
+	SetColor(10);
+	printf("Enter the number of halfback :");
+	SetColor(15);
+	scanf("%d", &b);
+	SetColor(10);
+	printf("Enter the number of attack :");
+	SetColor(15);
+	scanf("%d", &c);
+	formation(1, a, b, userteam);
+	team_info(userteam);
+	SetColor(1);
+	printf("\n\nNow you can change your players place or change them when finished enter -1:\n\n");
+	SetColor(10);
+	while (1) {
+		int id1, id2;
+		printf("Enter first player id :");
 		SetColor(15);
-		scanf("%d", &choice);
-	} while (choice != 1 && choice != 0 && choice != 2);
-	if (choice == 1) {
-		printf("Now you can change your formation\n");
+		scanf("%d", &id1);
+		if (id1 == -1) break;
 		SetColor(10);
-		printf("Enter the number of deffense :");
+		printf("Enter second player id :");
 		SetColor(15);
-		scanf("%d", &a);
-		SetColor(10);
-		printf("Enter the number of halfback :");
-		SetColor(15);
-		scanf("%d", &b);
-		SetColor(10);
-		printf("Enter the number of attack :");
-		SetColor(15);
-		scanf("%d", &c);
-		formation(1, a, b, c,userteam);
+		scanf("%d", &id2);
+		taviz(id1 - 1, id2 - 1, userteam);
 		team_info(userteam);
-		SetColor(1);
-		continue;
-	}
-	else if (choice == 2) {
-		printf("\n\nNow you can change your players place or change them when finished enter -1:\n\n");
-		SetColor(10);
-		while (1) {
-			int id1, id2;
-			SetColor(10);
-			printf("Enter first player id :");
-			SetColor(15);
-			scanf("%d", &id1);
-			if (id1 == -1) break;
-			SetColor(10);
-			printf("Enter second player id :");
-			SetColor(15);
-			scanf("%d", &id2);
-			taviz(id1 - 1, id2 - 1, userteam);
-			team_info(userteam);
-		}
-		continue;
-	}
-	else if (choice == 0) return;
-	else continue;
 	}
 }
 void SetColor(int ForgC)
@@ -933,4 +855,3 @@ void SetColor(int ForgC)
 		SetConsoleTextAttribute(hStdOut, wColor);
 	}
 }
-
