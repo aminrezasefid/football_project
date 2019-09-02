@@ -5,9 +5,8 @@
 #include "Header.h"
 #include "defines.h"
 #pragma comment(lib, "winmm.lib")
-//#include <conio.h>
+#include <conio.h>
 int main() {
-	TEAM *useraddress;
 	SetColor(15);
 	TEAM *team;
 	TEAM userteam;
@@ -20,16 +19,9 @@ int main() {
 	int n = 1; //tedad hafte
 	int n2 = 0; // tedad bazi haye hafte
 	int choice = 0;
-	int checker = 0;
-	games_week.games_in_week = 8;
-	do {
-		printf("Enter 1 for New league Or 2 for Loading existing league: ");
-		if (checker == 0) {
-			PlaySound(TEXT("sounds/begin.wav"), NULL, SND_FILENAME);
-			checker = 1;
-		}
-		if (scanf("%d", &choice) != 1) scanf("%d", &choice);
-	} while (choice != 1 && choice != 2);
+	printf("Enter 1 for New league Or 2 for Load existing league: ");
+	PlaySound(TEXT("sounds/begin.wav"), NULL, SND_FILENAME);
+	scanf("%d", &choice);
 	if (choice == 1) {
 		team = newleague(team);
 		print_teams(team);
@@ -38,17 +30,16 @@ int main() {
 		printf("%s", "Please choose a team number : ");
 		PlaySound(TEXT("sounds/choose_team.wav"), NULL, SND_FILENAME);
 		scanf("%d", &id);
+		games_week.games_in_week = 8;
 		fgets(input, 50, stdin); //khali kardane buffer
 		TEAM *tmp = search_team_by_id(team, id);
 		userteam = *tmp;
 	}
-	else if (choice == 2) {
+	/*else if (choice == 2) {
 	loading('l');
-	useraddress=loadleague(team,&games_week);
+	loadleague();
 	PlaySound(TEXT("sounds/load.wav"), NULL, SND_FILENAME);
-	userteam = *useraddress;
-	fgets(input, 100, stdin);
-	}
+	}*/
 	nextgames(team, &games_week);
 	scoreboard(team, &userteam);
 	ranking_player(&userteam);
@@ -69,11 +60,11 @@ int main() {
 			fgets(input, 50, stdin);
 		}
 		else if (strcmp(input, "table\n") == 0) scoreboard(team, &userteam);
-		else if (strcmp(input, "save\n") == 0) {
-			PlaySound(TEXT("sounds/save.wav"), NULL, SND_FILENAME);
-			loading('S');
-			save(games_week, team,&userteam);
-		}
+		else if (strcmp(input, "save\n") == 0);/* {
+											   PlaySound(TEXT("sounds/save.wav"), NULL, SND_FILENAME);
+											   loading('S');
+											   save();
+											   }*/
 		else if (strstr(input, "proceed") != NULL) {
 			strtok(input, " ");
 			char *tmp = strtok(NULL, " ");
@@ -82,6 +73,12 @@ int main() {
 			}
 			PlaySound(TEXT("sounds/simulation.wav"), NULL, SND_FILENAME);
 			simulation(&games_week, team, &userteam, n);
+		}
+		else if (strcmp(input, "lineup all")) {
+			int tmp = 0;
+			for (tmp = 0; tmp < 5; tmp++) {
+				lineup(team + tmp);
+			}
 		}
 		else continue;
 	}
